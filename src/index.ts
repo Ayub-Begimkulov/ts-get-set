@@ -68,3 +68,79 @@ export const get: GetFunction = (object, stringPath, defaultValue) => {
     }
   }
 };
+
+type Set<Obj extends AnyObject, Path extends string[], Value> = Set_<
+  Obj,
+  Path,
+  Value
+>;
+
+type Set_<
+  Obj extends AnyObject,
+  Path extends string[],
+  Value,
+  Index extends number = 0
+> = {
+  0: {
+    [K in keyof Obj | Path[Index]]: K extends Path[Index]
+      ? Set_<GetObjectForKey<Obj, Path[Index]>, Path, Value, Depth[Index]>
+      : Obj[K];
+  };
+  1: Value;
+}[Index extends Path["length"] ? 1 : 0];
+
+type GetObjectForKey<
+  Obj extends AnyObject,
+  Key extends string | number
+> = Obj[Key] extends AnyObject
+  ? Obj[Key]
+  : IsNumericKey<Key> extends true
+  ? []
+  : {};
+
+type IsNumericKey<T extends string | number> = T extends number
+  ? true
+  : T extends `${number}`
+  ? true
+  : false;
+
+type Test2 = Set<{ a: number; b: number }, ["b", "c", "1"], "b">;
+
+type SetTuple<Arr extends unknown[], Idx extends number, Value> = {
+  [K in keyof Arr | Idx]: K extends Idx ? Value : Arr[K];
+};
+
+type Test3 = SetTuple<[1, 2, 3], 3, 5>;
+
+interface SetFunction {
+  <Obj extends AnyObject, Key extends string, Value>(
+    object: Obj,
+    stringPath: Key,
+    value: Value
+  ): object is Set<Obj, PathString<Key>, Value>;
+}
+
+export const set: SetFunction = (object, stringPath, value) => {
+  let index = -1;
+  const path = stringToPath(stringPath);
+  const length = path.length;
+  const lastIndex = length - 1;
+
+  while (++index < length) {
+    const key = path[index]!;
+    let newValue = value;
+
+    if (index !== lastIndex) {
+      const objValue = object[key]!;
+      newValue =
+        isObject(objValue) || Array.isArray(objValue)
+          ? objValue
+          : !isNaN(+path[index + 1]!)
+          ? []
+          : {};
+    }
+    object[key] = newValue;
+    object = object[key];
+  }
+  return object;
+};
