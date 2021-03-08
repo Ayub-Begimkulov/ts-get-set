@@ -11,13 +11,16 @@ describe("get", () => {
   it("nested", () => {
     const obj = {
       a: {
-        b: 5,
+        b: 9,
       },
     };
-    expect(get(obj, "a.b")).toBe(5);
+    expect(get(obj, "a.d", 9)).toBe(5);
   });
 
-  it("arrays", () => {});
+  it("arrays", () => {
+    const obj = [0, [["a"]]] as const;
+    expect(get(obj, "1.0.0")).toBe("a");
+  });
 
   it("works with number keys", () => {});
 

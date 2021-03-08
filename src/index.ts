@@ -2,6 +2,7 @@ interface AnyObject {
   [key: string]: any;
 }
 
+// TODO handle empty string
 type PathString<
   StringPath extends string,
   Path extends string[] = []
@@ -9,27 +10,20 @@ type PathString<
   ? PathString<Rest, [...Path, Key]>
   : [...Path, StringPath];
 
+type Depth = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+
 type Get<
-  T extends AnyObject,
+  Obj extends AnyObject,
   Path extends string[],
-  DefaultValue = undefined,
-  Index extends unknown[] = []
-> = Path[Index["length"]] extends keyof T
-  ? Get<T[Path[Index["length"]]], Path, DefaultValue, [unknown, ...Index]>
-  : Index["length"] extends Path["length"]
-  ? T
-  : DefaultValue;
+  DefaultValue = undefined
+> = Get_<Obj, Path, DefaultValue> extends infer X ? X : never;
 
-// TODO fix this
-// @ts-ignore
-type Test = PathString<"a..b">;
-
-function test<T = undefined>(a?: T) {
-  return a;
-}
-
-const a = test();
-const b = test(5);
+type Get_<Value, Path extends string[], Default, Index extends number = 0> = {
+  0: Path[Index] extends keyof Value
+    ? Get_<Value[Path[Index]], Path, Default, Depth[Index]>
+    : Default;
+  1: Value extends undefined ? Default : Value;
+}[Index extends Path["length"] ? 1 : 0];
 
 const stringToPath = <T extends string>(path: T) =>
   path.split(".").filter(Boolean) as PathString<T>;
@@ -47,29 +41,15 @@ const isObject = (value: unknown): value is AnyObject =>
 const isUndefined = (value: unknown): value is undefined =>
   typeof value === "undefined";
 
-declare function g<
-  Obj extends AnyObject,
-  Key extends string,
-  Default = undefined
->(
-  object: Obj,
-  stringPath: Key,
-  defaultValue?: Default
-): Get<Obj, PathString<Key>, Default>;
+interface GetFunction {
+  <Obj extends AnyObject, Key extends string, Default = undefined>(
+    object: Obj,
+    stringPath: Key,
+    defaultValue?: Default
+  ): Get<Obj, PathString<Key>, Default>;
+}
 
-const GetTest1 = g({ a: 5 }, "a.b");
-// @ts-ignore add test for unknown if path is wrong
-const GetTest2 = get({ a: 5 }, "a.b");
-
-export const get = <
-  Obj extends AnyObject,
-  Key extends string,
-  Default = undefined
->(
-  object: Obj,
-  stringPath: Key,
-  defaultValue?: Default
-): Get<Obj, PathString<Key>, Default> => {
+export const get: GetFunction = (object, stringPath, defaultValue) => {
   const path = stringToPath(stringPath);
   let index = -1;
   const length = path.length;
@@ -87,5 +67,4 @@ export const get = <
       return defaultValue;
     }
   }
-  return;
 };
