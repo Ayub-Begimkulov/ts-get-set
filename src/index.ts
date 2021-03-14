@@ -106,12 +106,6 @@ type IsNumericKey<T extends string | number> = T extends number
 
 type Test2 = Set<{ a: number; b: number }, ["b", "c", "1"], "b">;
 
-type SetTuple<Arr extends unknown[], Idx extends number, Value> = {
-  [K in keyof Arr | Idx]: K extends Idx ? Value : Arr[K];
-};
-
-type Test3 = SetTuple<[1, 2, 3], 3, 5>;
-
 interface SetFunction {
   <Obj extends AnyObject, Key extends string, Value>(
     object: Obj,
@@ -119,6 +113,12 @@ interface SetFunction {
     value: Value
   ): object is Set<Obj, PathString<Key>, Value>;
 }
+
+/* 
+
+https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAbwPICMBWBTAxjANHAGWAGcYBfOAMyghDgHIZiBaGCCAGxQw5noCh+MAJ5gMcAMJQMAQxgYAglCgzhAHn5w4AFVEZcmuAEkAdgBMMADzhX554nBMBXENyhwAPnFJRgJgOYGAHxwALyS0nKKyqoA+mq6YvimFpYhANyCfvJQlDJY4gomwqiYOIiGANoA1hjCAFzeML4BALqNMsWZFIIiYjoQSirq2iHh2jaWdmYOTibVJhAA7iZwAPw6k9Oz84srla3rm43aB3CNJhgAbhjuvXpwALIy1uEATAAMmUIPUrLyQziGi0iX0hhSVi2GHsjhcbk8TRagUMACUMMQnLwoTC5gtliYzuEDvwxnA0RjeJUAEQcaH+GAACyph1s0JmTxecEMG0uNzuWka5MxMEq9FpAUZ9BZUzZDgh1g2lQAdCqhbx8KDDo0-lFAcJ4qDkuYrPhlar0cL8HMLJQ-BgzK0gt8+uJtOiYG8whF-tFhmpnK5bvgAGxBe79ADKGBgeoS2PZuL2BNaRtS8YcAbc+AAajIOE4MKTStgYErHrd-BgEvgdQCYupc-n9MZjWkw+HXe6vVGY-W1JUAIz4N74ADMKbgwfwmduQSAA
+
+*/
 
 export const set: SetFunction = (object, stringPath, value) => {
   let index = -1;
