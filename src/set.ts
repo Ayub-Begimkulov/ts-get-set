@@ -3,11 +3,9 @@ import { Object } from "../../ts-toolbelt/sources";
 import { PathString, stringToPath } from "./string-to-path";
 import { AnyObject, Depth } from "./types";
 
-type Set<Obj extends AnyObject, Path extends string[], Value> = Set_<
-  Obj,
-  Path,
-  Value
->;
+type Set<Obj extends AnyObject, Path extends string[], Value> =
+  // TODO should we remove empty elements?
+  Path["length"] extends 0 ? Obj : Set_<Obj, Path, Value>;
 
 type Set_<
   Obj extends AnyObject,
@@ -27,7 +25,7 @@ type Set_<
           : Obj[K];
       }
     : Set_<
-        Object.Merge<Obj, GetDefault<Path[Index], undefined>, "deep">,
+        Object.Merge<Obj, GetDefault<Path[Index], undefined>>,
         Path,
         Value,
         Index
@@ -88,7 +86,7 @@ interface SetFunction {
     object: Obj,
     stringPath: Key,
     value: Value
-  ): Set<Obj, PathString<Key>, Value>;
+  ): /* asserts object is  */ Set<Obj, PathString<Key>, Value>;
 }
 
 /* 
@@ -128,3 +126,5 @@ let b = set(a, "b.2", { c: "d" });
 // e.b should not be `any`
 let d = { a: 5, b: [1, 2, 3] };
 let e = set(a, "b.2", { c: "d" });
+
+let t = set({ a: 5 }, "", 5);

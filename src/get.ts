@@ -1,11 +1,6 @@
 import { PathString, stringToPath } from "./string-to-path";
+import { AnyObject, Depth } from "./types";
 import { hasOwn, isUndefined, isObject } from "./utils";
-
-export interface AnyObject {
-  [key: string]: any;
-}
-
-type Depth = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
 type Get<
   Obj extends AnyObject,
