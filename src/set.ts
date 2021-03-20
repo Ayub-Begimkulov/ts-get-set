@@ -54,12 +54,6 @@ type CreateArray<Type, Index extends number | string> = CreateArray_<
   Index
 >;
 
-type Max = 20;
-
-type CreateObject<Key extends string, Value> = {
-  [K in Key]: Value;
-};
-
 type CreateArray_<
   Type,
   Index extends number | string,
@@ -69,6 +63,12 @@ type CreateArray_<
   : `${Result["length"]}` extends `${Index}`
   ? [...Result, Type]
   : CreateArray_<Type, Index, [...Result, undefined]>;
+
+type Max = 20;
+
+type CreateObject<Key extends string, Value> = {
+  [K in Key]: Value;
+};
 
 type TestObject = {
   a: number;
@@ -88,12 +88,6 @@ interface SetFunction {
     value: Value
   ): /* asserts object is  */ Set<Obj, PathString<Key>, Value>;
 }
-
-/* 
-
-https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAbwPICMBWBTAxjANHAGWAGcYBfOAMyghDgHIZiBaGCCAGxQw5noCh+MAJ5gMcAMJQMAQxgYAglCgzhAHn5w4AFVEZcmuAEkAdgBMMADzhX554nBMBXENyhwAPnFJRgJgOYGAHxwALyS0nKKyqoA+mq6YvimFpYhANyCfvJQlDJY4gomwqiYOIiGANoA1hjCAFzeML4BALqNMsWZFIIiYjoQSirq2iHh2jaWdmYOTibVJhAA7iZwAPw6k9Oz84srla3rm43aB3CNJhgAbhjuvXpwALIy1uEATAAMmUIPUrLyQziGi0iX0hhSVi2GHsjhcbk8TRagUMACUMMQnLwoTC5gtliYzuEDvwxnA0RjeJUAEQcaH+GAACyph1s0JmTxecEMG0uNzuWka5MxMEq9FpAUZ9BZUzZDgh1g2lQAdCqhbx8KDDo0-lFAcJ4qDkuYrPhlar0cL8HMLJQ-BgzK0gt8+uJtOiYG8whF-tFhmpnK5bvgAGxBe79ADKGBgeoS2PZuL2BNaRtS8YcAbc+AAajIOE4MKTStgYErHrd-BgEvgdQCYupc-n9MZjWkw+HXe6vVGY-W1JUAIz4N74ADMKbgwfwmduQSAA
-
-*/
 
 export const set: SetFunction = (object, stringPath, value) => {
   let index = -1;
@@ -123,8 +117,11 @@ export const set: SetFunction = (object, stringPath, value) => {
 let a = { a: 5, b: [1, 2, 3] as const };
 let b = set(a, "b.2", { c: "d" });
 
-// e.b should not be `any`
+// shouldn't be any
+let c = set({ a: [1, 2, 3] }, "a.2", "asdf");
+
 let d = { a: 5, b: [1, 2, 3] };
+// e.b should not be `any`
 let e = set(a, "b.2", { c: "d" });
 
 let t = set({ a: 5 }, "", 5);
