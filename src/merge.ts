@@ -41,7 +41,7 @@ assert<IsTuple<"x"[]>>(false);
 assert<IsTuple<[0, 1, 2]>>(true);
 assert<IsTuple<[0, 1, 2, ...number[]]>>(false);
 
-type SetArray<
+export type SetArray<
   A extends unknown[],
   Index extends string,
   Value

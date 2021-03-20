@@ -1,11 +1,25 @@
 import { isObject } from "./utils";
-import { Object } from "../../ts-toolbelt/sources";
 import { PathString, stringToPath } from "./string-to-path";
 import { AnyObject, Depth } from "./types";
+import { SetArray } from "./merge";
 
-type Set<Obj extends AnyObject, Path extends string[], Value> =
+export type Set<Obj extends AnyObject, Path extends string[], Value> =
   // TODO should we remove empty elements?
   Path["length"] extends 0 ? Obj : Set_<Obj, Path, Value>;
+
+type SetObject<Obj extends AnyObject, Key extends string, Value> = {
+  [K in keyof Obj | Key]: K extends Key ? Value : Obj[K];
+};
+
+type SetShallow<
+  T extends AnyObject,
+  Key extends string,
+  Value
+> = T extends unknown
+  ? T extends unknown[]
+    ? SetArray<T, Key, Value>
+    : SetObject<T, Key, Value>
+  : never;
 
 type Set_<
   Obj extends AnyObject,
@@ -24,18 +38,9 @@ type Set_<
             >
           : Obj[K];
       }
-    : Set_<
-        Object.Merge<Obj, GetDefault<Path[Index], undefined>>,
-        Path,
-        Value,
-        Index
-      >;
+    : Set_<SetShallow<Obj, Path[Index], undefined>, Path, Value, Index>;
   1: Value;
 }[Index extends Path["length"] ? 1 : 0];
-
-type GetDefault<Index extends string, Value> = IsNumericKey<Index> extends true
-  ? CreateArray<Value, Index>
-  : CreateObject<Index, Value>;
 
 type GetObjectForKey<
   Obj extends AnyObject,
@@ -48,38 +53,6 @@ type GetObjectForKey<
   : {};
 
 type IsNumericKey<T extends string> = T extends `${number}` ? true : false;
-
-type CreateArray<Type, Index extends number | string> = CreateArray_<
-  Type,
-  Index
->;
-
-type CreateArray_<
-  Type,
-  Index extends number | string,
-  Result extends unknown[] = []
-> = Result["length"] extends Max
-  ? never
-  : `${Result["length"]}` extends `${Index}`
-  ? [...Result, Type]
-  : CreateArray_<Type, Index, [...Result, undefined]>;
-
-type Max = 20;
-
-type CreateObject<Key extends string, Value> = {
-  [K in Key]: Value;
-};
-
-type TestObject = {
-  a: number;
-  b: { c: number };
-};
-
-type TestPath = ["b", "c", "1"];
-
-type Test2 = Set<TestObject, TestPath, "asdf">;
-
-type Test3 = Set<[{ a: [1, { b: "asdf" }] }], ["0", "a", "1", "b"], "fdsa">;
 
 interface SetFunction {
   <Obj extends AnyObject, Key extends string, Value>(
@@ -114,14 +87,7 @@ export const set: SetFunction = (object, stringPath, value) => {
   return object as any;
 };
 
-let a = { a: 5, b: [1, 2, 3] as const };
-let b = set(a, "b.2", { c: "d" });
-
-// shouldn't be any
-let c = set({ a: [1, 2, 3] }, "a.2", "asdf");
-
-let d = { a: 5, b: [1, 2, 3] };
-// e.b should not be `any`
-let e = set(a, "b.2", { c: "d" });
-
-let t = set({ a: 5 }, "", 5);
+// TODO check this shit
+type Debug = Set<{ a: number[] }, ["a", "2"], "asdf">;
+// type Debug2 = Set_<number[], ["2"], "asdf">
+type Debug3 = "2" extends keyof number[] ? true : false;
