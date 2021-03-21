@@ -1,4 +1,4 @@
-import { set } from "./set";
+import { set } from "./index";
 
 describe("set", () => {
   it("basic", () => {

@@ -1,4 +1,4 @@
-import { stringToPath } from "./string-to-path";
+import { stringToPath } from "./index";
 
 describe("stringToPath", () => {
   it("basic", () => {
