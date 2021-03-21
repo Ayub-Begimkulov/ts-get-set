@@ -1,7 +1,7 @@
 import { isObject } from "./utils";
 import { PathString, stringToPath } from "./string-to-path";
 import { AnyObject, Depth } from "./types";
-import { SetArray } from "./merge";
+import { SetArray, SetTuple, GetArrayValue, IsTuple } from "./merge";
 
 export type Set<Obj extends AnyObject, Path extends string[], Value> =
   // TODO should we remove empty elements?
@@ -27,9 +27,31 @@ type Set_<
   Value,
   Index extends number = 0
 > = {
-  0: Path[Index] extends keyof Obj
-    ? {
-        [K in keyof Obj]: K extends Path[Index]
+  0: Obj extends unknown[]
+    ? IsTuple<Obj> extends true
+      ? SetTuple<
+          Obj,
+          Path[Index],
+          Set_<
+            // TODO make a version for array?
+            GetObjectForKey<Obj, number, Path[Depth[Index]]>,
+            Path,
+            Value,
+            Depth[Index]
+          >
+        >
+      : (
+          | GetArrayValue<Obj>
+          | Set_<
+              // TODO make a version for array?
+              GetObjectForKey<Obj, number, Path[Depth[Index]]>,
+              Path,
+              Value,
+              Depth[Index]
+            >
+        )[]
+    : {
+        [K in keyof Obj | Path[Index]]: K extends Path[Index]
           ? Set_<
               GetObjectForKey<Obj, Path[Index], Path[Depth[Index]]>,
               Path,
@@ -37,14 +59,13 @@ type Set_<
               Depth[Index]
             >
           : Obj[K];
-      }
-    : Set_<SetShallow<Obj, Path[Index], undefined>, Path, Value, Index>;
+      };
   1: Value;
 }[Index extends Path["length"] ? 1 : 0];
 
 type GetObjectForKey<
   Obj extends AnyObject,
-  Key extends string,
+  Key extends string | number,
   NextKey extends string
 > = Obj[Key] extends AnyObject
   ? Obj[Key]
@@ -91,3 +112,22 @@ export const set: SetFunction = (object, stringPath, value) => {
 type Debug = Set<{ a: number[] }, ["a", "2"], "asdf">;
 // type Debug2 = Set_<number[], ["2"], "asdf">
 type Debug3 = "10" extends `${keyof [1, 2, 3]}` ? true : false;
+
+type TestObject2 = {
+  a: number;
+  b: { c: number };
+};
+
+type TestPath2 = ["b", "c", "1"];
+
+type Test2 = Set<TestObject2, TestPath2, "asdf">;
+
+type Test3 = Set<[{ a: [1, { b: "asdf" }] }], ["0", "a", "1", "b"], "fdsa">;
+
+// TODO if value is array but key isn't array'ish
+// @ts-expect-error
+type Test4 = Set<[1, 2, 3], ["a", "b"], {}>;
+
+// TODO check this 2 cases
+let a = set([1, 2, "a"], "a.b", 5);
+let b = set([1, 2, "a"] as const, "a.b", 5);

@@ -1,27 +1,6 @@
 import { Depth } from "./types";
 
-/* export type MergeArrays<
-  A extends unknown[],
-  B extends unknown[]
-> = A extends unknown
-  ? B extends unknown
-    ? IsTuple<A> extends true
-      ? IsTuple<B> extends true
-        ? MergeTuples<A, B>
-        : MergeRegularArray<A, B>
-      : MergeRegularArray<A, B>
-    : never
-  : never;
-
-type MergeRegularArray<A extends unknown[], B extends unknown[]> =
-  | A
-  | B extends Array<infer U>
-  ? U[]
-  : never;
-
-type MergeTuples<A extends unknown[], B extends unknown[]> = [...A, ...B]; */
-
-type IsTuple<Tuple extends unknown[]> = Tuple extends unknown
+export type IsTuple<Tuple extends unknown[]> = Tuple extends unknown
   ? Tuple extends []
     ? true
     : Tuple extends Array<infer U>
@@ -54,13 +33,15 @@ export type SetArray<
       (GetArrayValue<A> | Value)[]
   : never;
 
-type GetArrayValue<T extends unknown[]> = T extends Array<infer U> ? U : never;
+export type GetArrayValue<T extends unknown[]> = T extends Array<infer U>
+  ? U
+  : never;
 
-type SetTuple<A extends unknown[], Index extends string, Value> = SetTuple_<
-  A,
-  Index,
+export type SetTuple<
+  A extends unknown[],
+  Index extends string,
   Value
->;
+> = SetTuple_<A, Index, Value>;
 
 type SetTuple_<
   A extends unknown[],
@@ -100,8 +81,6 @@ type GetTupleKeys<Tuple extends unknown[]> = Extract<
 >;
 
 // Tests
-declare function assert<T>(value: T): void;
-
 type TestTuple = [1, 2, 3];
 
 assert<GetTupleRest<TestTuple, 2>>([3]);
