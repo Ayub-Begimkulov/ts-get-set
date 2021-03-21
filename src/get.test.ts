@@ -14,20 +14,25 @@ describe("get", () => {
         b: 9,
       },
     };
-    expect(get(obj, "a.d", 9)).toBe(5);
+    expect(get(obj, "a.d", 9)).toBe(9);
   });
 
   it("arrays", () => {
-    const obj = [0, [["a"]]] as const;
+    const obj = [0, [["a"]]];
     expect(get(obj, "1.0.0")).toBe("a");
+    const obj2 = { a: [1, { b: [undefined, "asdf"] }] };
+    expect(get(obj2, "a.1.b.1")).toBe("asdf");
   });
 
-  it("works with number keys", () => {});
+  it("should return undefined if path is wrong and not default value", () => {
+    const obj = { a: 5 };
+    expect(get(obj, "b")).toBe(undefined);
+  });
 
-  it("mixed", () => {});
-
-  it("default", () => {});
+  it("should return default value if provided when path is wrong", () => {
+    const obj = { a: 5 };
+    expect(get(obj, "b", "asdf")).toBe("asdf");
+  });
 
   it("should return undefined with empty path", () => {});
-  it("should return undefined if path is wrong", () => {});
 });
