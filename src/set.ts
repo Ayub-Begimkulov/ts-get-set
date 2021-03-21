@@ -1,25 +1,13 @@
 import { isObject } from "./utils";
 import { PathString, stringToPath } from "./string-to-path";
 import { AnyObject, Depth } from "./types";
-import { SetArray } from "./merge";
+import { SetTuple, GetArrayValue, IsTuple } from "./merge";
 
-export type Set<Obj extends AnyObject, Path extends string[], Value> =
-  // TODO should we remove empty elements?
-  Path["length"] extends 0 ? Obj : Set_<Obj, Path, Value>;
-
-type SetObject<Obj extends AnyObject, Key extends string, Value> = {
-  [K in keyof Obj | Key]: K extends Key ? Value : Obj[K];
-};
-
-type SetShallow<
-  T extends AnyObject,
-  Key extends string,
+export type Set<
+  Obj extends AnyObject,
+  Path extends string[],
   Value
-> = T extends unknown
-  ? T extends unknown[]
-    ? SetArray<T, Key, Value>
-    : SetObject<T, Key, Value>
-  : never;
+> = Path["length"] extends 0 ? Obj : Set_<Obj, Path, Value>;
 
 type Set_<
   Obj extends AnyObject,
@@ -27,9 +15,37 @@ type Set_<
   Value,
   Index extends number = 0
 > = {
-  0: Path[Index] extends keyof Obj
-    ? {
-        [K in keyof Obj]: K extends Path[Index]
+  0: Obj extends readonly unknown[]
+    ? IsNumericKey<Path[Index]> extends true
+      ? IsTuple<Obj> extends true
+        ? SetTuple<
+            Obj,
+            Path[Index],
+            Set_<
+              // TODO make a version for array?
+              GetObjectForKey<Obj, number, Path[Depth[Index]]>,
+              Path,
+              Value,
+              Depth[Index]
+            >
+          >
+        : (
+            | // TODO should we add `undefined`?
+            //because if index is greater than length
+            // we will have undefined(empty) elements in array
+            GetArrayValue<Obj>
+            | Set_<
+                // TODO make a version for array?
+                GetObjectForKey<Obj, number, Path[Depth[Index]]>,
+                Path,
+                Value,
+                Depth[Index]
+              >
+          )[]
+      : // if it's an array but the key isn't numeric create and intersection type with object
+        Obj & Set_<{}, Path, Value, Index>
+    : {
+        [K in keyof Obj | Path[Index]]: K extends Path[Index]
           ? Set_<
               GetObjectForKey<Obj, Path[Index], Path[Depth[Index]]>,
               Path,
@@ -37,14 +53,30 @@ type Set_<
               Depth[Index]
             >
           : Obj[K];
-      }
-    : Set_<SetShallow<Obj, Path[Index], undefined>, Path, Value, Index>;
+      }; //SetObject<Obj, Path, Value, Index>;
   1: Value;
 }[Index extends Path["length"] ? 1 : 0];
 
+// TODO why do types computed less eagerly when adding this?
+/* type SetObject<
+  Obj extends AnyObject,
+  Path extends string[],
+  Value,
+  Index extends number
+> = {
+  [K in keyof Obj | Path[Index]]: K extends Path[Index]
+    ? Set_<
+        GetObjectForKey<Obj, Path[Index], Path[Depth[Index]]>,
+        Path,
+        Value,
+        Depth[Index]
+      >
+    : Obj[K];
+}; */
+
 type GetObjectForKey<
   Obj extends AnyObject,
-  Key extends string,
+  Key extends string | number,
   NextKey extends string
 > = Obj[Key] extends AnyObject
   ? Obj[Key]
@@ -67,6 +99,7 @@ export const set: SetFunction = (object, stringPath, value) => {
   const path = stringToPath(stringPath);
   const length = path.length;
   const lastIndex = length - 1;
+  let currentObject = object;
 
   while (++index < length) {
     const key = path[index]!;
@@ -81,13 +114,8 @@ export const set: SetFunction = (object, stringPath, value) => {
           ? []
           : {};
     }
-    (object as AnyObject)[key] = newValue;
-    object = object[key];
+    (currentObject as AnyObject)[key] = newValue;
+    currentObject = currentObject[key];
   }
   return object as any;
 };
-
-// TODO check this shit
-type Debug = Set<{ a: number[] }, ["a", "2"], "asdf">;
-// type Debug2 = Set_<number[], ["2"], "asdf">
-type Debug3 = "10" extends `${keyof [1, 2, 3]}` ? true : false;

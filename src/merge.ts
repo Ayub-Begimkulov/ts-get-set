@@ -1,50 +1,31 @@
 import { Depth } from "./types";
 
-export type IsTuple<Tuple extends unknown[]> = Tuple extends unknown
+export type IsTuple<Tuple extends readonly unknown[]> = Tuple extends unknown
   ? Tuple extends []
     ? true
-    : Tuple extends Array<infer U>
+    : Tuple extends ReadonlyArray<infer U>
     ? U[] extends Tuple
       ? false
-      : Tuple extends [unknown, ...infer Rest] // edge case for types like `[1, 2, ...number[]]`
+      : Tuple extends readonly [unknown, ...infer Rest] // edge case for types like `[1, 2, ...number[]]`
       ? IsTuple<Rest>
       : never
     : never
   : never;
 
-// Tests
-declare function assert<T>(value: T): void;
-
-assert<IsTuple<[]>>(true);
-assert<IsTuple<"x"[]>>(false);
-assert<IsTuple<[0, 1, 2]>>(true);
-assert<IsTuple<[0, 1, 2, ...number[]]>>(false);
-
-export type SetArray<
-  A extends unknown[],
-  Index extends string,
-  Value
-> = A extends unknown
-  ? IsTuple<A> extends true
-    ? SetTuple<A, Index, Value>
-    : // TODO should we add `undefined`?
-      //because if index is greater than length
-      // we will have undefined(empty) elements in array
-      (GetArrayValue<A> | Value)[]
-  : never;
-
-export type GetArrayValue<T extends unknown[]> = T extends Array<infer U>
+export type GetArrayValue<T extends readonly unknown[]> = T extends Array<
+  infer U
+>
   ? U
   : never;
 
 export type SetTuple<
-  A extends unknown[],
+  A extends readonly unknown[],
   Index extends string,
   Value
 > = SetTuple_<A, Index, Value>;
 
 type SetTuple_<
-  A extends unknown[],
+  A extends readonly unknown[],
   Index extends string,
   Value,
   Result extends unknown[] = []
@@ -56,13 +37,13 @@ type SetTuple_<
 }[`${Result["length"]}` extends Index ? 1 : 0];
 
 type GetTupleRest<
-  Tuple extends unknown[],
+  Tuple extends readonly unknown[],
   Index extends number,
   Keys extends string = GetTupleKeys<Tuple>
 > = `${Index}` extends Keys ? GetTupleRest_<Tuple, Index, Keys> : [];
 
 type GetTupleRest_<
-  Tuple extends unknown[],
+  Tuple extends readonly unknown[],
   Index extends number,
   Keys extends string,
   Result extends unknown[] = []
@@ -75,15 +56,19 @@ type GetTupleRest_<
 
 // TODO dirty way (and most likely not effective from a performance perspective)
 // check if we can find other way
-type GetTupleKeys<Tuple extends unknown[]> = Extract<
+type GetTupleKeys<Tuple extends readonly unknown[]> = Extract<
   Exclude<keyof Tuple, number>,
   `${number}`
 >;
 
 // Tests
-type TestTuple = [1, 2, 3];
+declare function assert<T>(value: T): void;
 
-assert<GetTupleRest<TestTuple, 2>>([3]);
-assert<SetArray<[1, 2, "x"], "1", 5>>([1, 5, "x"]);
+assert<IsTuple<[]>>(true);
+assert<IsTuple<"x"[]>>(false);
+assert<IsTuple<[0, 1, 2]>>(true);
+assert<IsTuple<[0, 1, 2, ...number[]]>>(false);
+assert<IsTuple<readonly [1, 2, 3]>>(true);
 
-assert<SetArray<string[], "1", 5>>(["asdf", 5, "x", "hello world", 5, 5, 5]);
+assert<GetTupleRest<[1, 2, 3], 2>>([3]);
+assert<GetTupleRest<readonly [1, 2, 3], 2>>([3]);
