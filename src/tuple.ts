@@ -34,7 +34,7 @@ type SetTuple_<
   1: [...Result, Value, ...GetTupleRest<A, Depth[Result["length"]]>]; // TODO add rest of `A`
 }[`${Result["length"]}` extends Index ? 1 : 0];
 
-type GetTupleRest<
+export type GetTupleRest<
   Tuple extends readonly unknown[],
   Index extends number,
   Keys extends string = GetTupleKeys<Tuple>
@@ -58,15 +58,3 @@ type GetTupleKeys<Tuple extends readonly unknown[]> = Extract<
   Exclude<keyof Tuple, number>,
   `${number}`
 >;
-
-// Tests
-declare function assert<T>(value: T): void;
-
-assert<IsTuple<[]>>(true);
-assert<IsTuple<"x"[]>>(false);
-assert<IsTuple<[0, 1, 2]>>(true);
-assert<IsTuple<[0, 1, 2, ...number[]]>>(false);
-assert<IsTuple<readonly [1, 2, 3]>>(true);
-
-assert<GetTupleRest<[1, 2, 3], 2>>([3]);
-assert<GetTupleRest<readonly [1, 2, 3], 2>>([3]);

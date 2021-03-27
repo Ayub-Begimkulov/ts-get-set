@@ -1,7 +1,7 @@
 import { isObject } from "./utils";
 import { PathString, stringToPath } from "./string-to-path";
 import { AnyObject, Depth } from "./types";
-import { SetTuple, GetArrayValue, IsTuple } from "./merge";
+import { SetTuple, GetArrayValue, IsTuple } from "./tuple";
 
 export type Set<
   Obj extends AnyObject,
