@@ -78,9 +78,13 @@ type GetObjectForKey<
   Obj extends AnyObject,
   Key extends string | number,
   NextKey extends string
-> = Obj[Key] extends AnyObject
+> = Obj[Key] extends never
+  ? DefaultObject<NextKey>
+  : Obj[Key] extends AnyObject
   ? Obj[Key]
-  : IsNumericKey<NextKey> extends true
+  : DefaultObject<NextKey>;
+
+type DefaultObject<Key extends string> = IsNumericKey<Key> extends true
   ? []
   : {};
 
@@ -91,7 +95,7 @@ interface SetFunction {
     object: Obj,
     stringPath: Key,
     value: Value
-  ): /* asserts object is  */ Set<Obj, PathString<Key>, Value>;
+  ): Set<Obj, PathString<Key>, Value>;
 }
 
 export const set: SetFunction = (object, stringPath, value) => {

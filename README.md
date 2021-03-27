@@ -38,6 +38,46 @@ console.log(a.c[2].d); // "fdsa"
 
 ## API
 
+### `get`
+
+Gets the value at `path` of `object`. If the resolved value is `undefined`, the `defaultValue` is returned in its place.
+
+Usage:
+
+```ts
+const obj = { a: [1, 2, { b: 3 }] };
+get(obj, "a.2.b"); // 3
+```
+
+Type:
+
+```ts
+function get<Obj extends AnyObject, Key extends string, Default = undefined>(
+  object: Obj,
+  stringPath: Key,
+  defaultValue?: Default
+): Get<Obj, PathString<Key>, Default>;
+```
+
+### `set`
+
+Usage:
+
+```ts
+const obj = {};
+set(obj, "a.2.b", "hello"); // { a: [undefined, undefined, { b: "hello" }] }
+```
+
+Type:
+
+```ts
+function set<Obj extends AnyObject, Key extends string, Value>(
+  object: Obj,
+  stringPath: Key,
+  value: Value
+): Set<Obj, PathString<Key>, Value>;
+```
+
 ## License
 
 [MIT](./LICENSE)
