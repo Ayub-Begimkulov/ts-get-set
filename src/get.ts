@@ -2,7 +2,7 @@ import { PathString, stringToPath } from "./string-to-path";
 import { AnyObject, Depth } from "./types";
 import { hasOwn, isUndefined, isObject } from "./utils";
 
-type Get<
+export type Get<
   Obj extends AnyObject,
   Path extends string[],
   DefaultValue = undefined

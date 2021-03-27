@@ -12,11 +12,9 @@ export type IsTuple<Tuple extends readonly unknown[]> = Tuple extends unknown
     : never
   : never;
 
-export type GetArrayValue<T extends readonly unknown[]> = T extends Array<
-  infer U
->
-  ? U
-  : never;
+export type GetArrayValue<
+  T extends readonly unknown[]
+> = T extends ReadonlyArray<infer U> ? U : never;
 
 export type SetTuple<
   A extends readonly unknown[],
