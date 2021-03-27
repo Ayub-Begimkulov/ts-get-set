@@ -6,6 +6,9 @@
 
 ---
 
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Ayub-Begimkulov/ts-get-set/Test?label=CI&logo=github&style=flat-square)](https://github.com/Ayub-Begimkulov/ts-get-set/actions/workflows/main.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/Ayub-Begimkulov/ts-get-set?style=flat-square)](https://app.codecov.io/gh/Ayub-Begimkulov/ts-get-set)
+
 ## Installation
 
 ```shell
