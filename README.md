@@ -8,6 +8,9 @@
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Ayub-Begimkulov/ts-get-set/Test?label=CI&logo=github&style=flat-square)](https://github.com/Ayub-Begimkulov/ts-get-set/actions/workflows/main.yml)
 [![Codecov](https://img.shields.io/codecov/c/github/Ayub-Begimkulov/ts-get-set?style=flat-square)](https://app.codecov.io/gh/Ayub-Begimkulov/ts-get-set)
+[![npm](https://img.shields.io/npm/v/ts-get-set?style=flat-square)](https://www.npmjs.com/package/ts-get-set)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/ts-get-set?style=flat-square)](https://bundlephobia.com/result?p=ts-get-set)
+[![GitHub](https://img.shields.io/github/license/Ayub-Begimkulov/ts-get-set?style=flat-square)](https://github.com/Ayub-Begimkulov/tiny-use-debounce/blob/master/LICENSE)
 
 ## Installation
 

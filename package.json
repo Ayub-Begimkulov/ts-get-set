@@ -1,6 +1,6 @@
 {
   "name": "ts-get-set",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "100% Type safe get and set functions",
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -32,5 +32,17 @@
     "rollup-plugin-typescript2": "^0.30.0",
     "ts-jest": "^26.5.3",
     "typescript": "^4.2.3"
-  }
+  },
+  "files": [
+    "dist",
+    "logo-small.jpg"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ayub-Begimkulov/ts-get-set.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ayub-Begimkulov/ts-get-set/issues"
+  },
+  "homepage": "https://github.com/Ayub-Begimkulov/ts-get-set#readme"
 }
