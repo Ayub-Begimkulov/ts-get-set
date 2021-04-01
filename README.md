@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./logo-small.jpg" alt="Logo" title="TS Get Set">
+  <img src="./logo.svg" alt="Logo" title="TS Get Set" width="360px">
   <h1>TS Get Set</h1>
   <p>100% Type safe get and set functions.</p>
 </div>
@@ -35,12 +35,25 @@ const a = {
 let d: string = get(a, "c.2.d");
 console.log(d); // "asdf"
 
-set(a, "c.2.d", "fdsa");
+const updatedA = set(a, "c.2.d", "fdsa");
+
+console.log(updatedA);
+// {
+//   b: 5,
+//   c: [1, 2, { d: "fdsa" }],
+// };
 
 d = get(a, "c.2.d");
 console.log(d); // "fdsa"
 console.log(a.c[2].d); // "fdsa"
 ```
+
+<!-- ## Limitations
+
+There are few limitations with this library that, unfortunately,couldn't be solved right now:
+
+1. Although `set` function mutates passed object, it's impossible to correctly type this (if you have any suggestions, feel free share). So for now you'd need to reassign your object to a new variable after calling `set`.
+2. -->
 
 ## API
 
@@ -83,6 +96,61 @@ function set<Obj extends AnyObject, Key extends string, Value>(
   value: Value
 ): Set<Obj, PathString<Key>, Value>;
 ```
+
+### `stringToPath`
+
+Converts a dot notation string to a path array
+
+Usage:
+
+```ts
+const path = stringToPath("a.b.2.c.5");
+
+console.log(path); // ["a", "b", "2", "c", "5"]
+```
+
+### `PathString`
+
+A type that converts string to a path.
+
+Usage:
+
+```ts
+type Path = PathString<"a.b.c.1">; // ["a", "b", "c", "1"]
+```
+
+### `Get`
+
+A type that gets a property from object at specified path.
+
+Usage:
+
+```ts
+type NestedProps = Get<{ a: { b: [1, "c"] } }, ["a", "b", "2"]>; // "c";
+// or
+type NestedProps = Get<{ a: { b: [1, "c"] } }, PathString<"a.b.2">>; // "c";
+```
+
+### `Set`
+
+A type that sets the property to a provided value at path.
+
+```ts
+type Data = { b: number; c: string };
+type NewData = Set<Data, ["c", "d"], string[]>; // { c: { d: string[]; } b: number; }
+// or
+type NewData = Set<Data, PathString<"c.d">, string[]>; // { c: { d: string[]; } b: number; }
+```
+
+## Roadmap
+
+<!-- TODO add link open an issue -->
+
+Here is the list of features that I want to add in the near future. It's not the strict set of tasks but more of a plan for the development of this package. If you have any suggestions, feel free to open an issue.
+
+- [x] get, set and stringToPath 100% type safety (open an issue if you've found some bug).
+- [ ] Support for `[]` syntax for index access.
+- [ ] Suggestions in dot notation string (may increase compilation time).
 
 ## License
 
