@@ -48,6 +48,22 @@ console.log(d); // "fdsa"
 console.log(a.c[2].d); // "fdsa"
 ```
 
+## Recommended configurations
+
+<!-- TODO add description about config options -->
+
+When using this library it's recommended to turn on these options in your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    /* ... */
+    "strict": true,
+    "noUncheckIndexAccess": true
+  }
+}
+```
+
 <!-- ## Limitations
 
 There are few limitations with this library that, unfortunately,couldn't be solved right now:

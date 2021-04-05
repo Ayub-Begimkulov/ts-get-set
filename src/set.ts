@@ -22,29 +22,18 @@ type Set_<
             Obj,
             Path[Index],
             Set_<
-              // TODO make a version for array?
               GetObjectForKey<Obj, number, Path[Depth[Index]]>,
               Path,
               Value,
               Depth[Index]
             >
           >
-        : (
-            | // TODO should we add `undefined`?
-            //because if index is greater than length
-            // we will have undefined(empty) elements in array
-            GetArrayValue<Obj>
-            | Set_<
-                // TODO make a version for array?
-                GetObjectForKey<Obj, number, Path[Depth[Index]]>,
-                Path,
-                Value,
-                Depth[Index]
-              >
-          )[]
-      : // if it's an array but the key isn't numeric create and intersection type with object
+        : SetArray<Obj, Path, Value, Index>
+      : // if object is an array but the key isn't numeric create and intersection type with object
         Obj & Set_<{}, Path, Value, Index>
     : {
+        // writing this type inline because
+        // ts preserves type aliases in unions since 4.2
         [K in keyof Obj | Path[Index]]: K extends Path[Index]
           ? Set_<
               GetObjectForKey<Obj, Path[Index], Path[Depth[Index]]>,
@@ -53,26 +42,24 @@ type Set_<
               Depth[Index]
             >
           : Obj[K];
-      }; //SetObject<Obj, Path, Value, Index>;
+      };
   1: Value;
 }[Index extends Path["length"] ? 1 : 0];
 
-// TODO why do types computed less eagerly when adding this?
-/* type SetObject<
-  Obj extends AnyObject,
+type SetArray<
+  Arr extends readonly unknown[],
   Path extends string[],
   Value,
   Index extends number
-> = {
-  [K in keyof Obj | Path[Index]]: K extends Path[Index]
-    ? Set_<
-        GetObjectForKey<Obj, Path[Index], Path[Depth[Index]]>,
-        Path,
-        Value,
-        Depth[Index]
-      >
-    : Obj[K];
-}; */
+> = (
+  | GetArrayValue<Arr>
+  | Set_<
+      GetObjectForKey<Arr, number, Path[Depth[Index]]>,
+      Path,
+      Value,
+      Depth[Index]
+    >
+)[];
 
 type GetObjectForKey<
   Obj extends AnyObject,
@@ -101,22 +88,20 @@ interface SetFunction {
 export const set: SetFunction = (object, stringPath, value) => {
   let index = -1;
   const path = stringToPath(stringPath);
-  const length = path.length;
-  const lastIndex = length - 1;
+  const lastIndex = path.length - 1;
   let currentObject = object;
 
-  while (++index < length) {
+  while (++index <= lastIndex) {
     const key = path[index]!;
     let newValue: any = value;
 
     if (index !== lastIndex) {
       const objValue = object[key]!;
-      newValue =
-        isObject(objValue) || Array.isArray(objValue)
-          ? objValue
-          : !isNaN(+path[index + 1]!)
-          ? []
-          : {};
+      newValue = isObject(objValue)
+        ? objValue
+        : !isNaN(+path[index + 1]!)
+        ? []
+        : {};
     }
     (currentObject as AnyObject)[key] = newValue;
     currentObject = currentObject[key];

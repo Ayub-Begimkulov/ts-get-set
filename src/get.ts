@@ -26,9 +26,8 @@ interface GetFunction {
 export const get: GetFunction = (object, stringPath, defaultValue) => {
   const path = stringToPath(stringPath);
   let index = -1;
-  const length = path.length;
-  const lastIndex = length - 1;
-  while (++index < length) {
+  const lastIndex = path.length - 1;
+  while (++index <= lastIndex) {
     const key = path[index]!;
     if (hasOwn(object, key)) {
       if (lastIndex === index) {
