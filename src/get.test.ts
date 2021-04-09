@@ -41,5 +41,8 @@ describe("get", () => {
     expect(get(obj, "b", "asdf")).toBe("asdf");
   });
 
-  it("should return undefined with empty path", () => {});
+  it("should return object with empty path", () => {
+    const obj = { a: 5 };
+    expect(get(obj, "")).toStrictEqual({ ...obj });
+  });
 });
