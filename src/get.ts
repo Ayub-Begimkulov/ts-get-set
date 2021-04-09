@@ -40,4 +40,5 @@ export const get: GetFunction = (object, stringPath, defaultValue) => {
       return defaultValue;
     }
   }
+  return object;
 };
