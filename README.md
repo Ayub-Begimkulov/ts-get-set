@@ -54,7 +54,7 @@ console.log(a.c[2].d); // "fdsa"
 
 When using this library it's recommended to turn on these options in your `tsconfig.json`:
 
-```json
+```js
 {
   "compilerOptions": {
     /* ... */
