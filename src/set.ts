@@ -28,7 +28,15 @@ type Set_<
               Depth[Index]
             >
           >
-        : SetArray<Obj, Path, Value, Index>
+        : (
+            | GetArrayValue<Obj>
+            | Set_<
+                GetObjectForKey<Obj, number, Path[Depth[Index]]>,
+                Path,
+                Value,
+                Depth[Index]
+              >
+          )[]
       : // if object is an array but the key isn't numeric create and intersection type with object
         Obj & Set_<{}, Path, Value, Index>
     : {
@@ -45,21 +53,6 @@ type Set_<
       };
   1: Value;
 }[Index extends Path["length"] ? 1 : 0];
-
-type SetArray<
-  Arr extends readonly unknown[],
-  Path extends string[],
-  Value,
-  Index extends number
-> = (
-  | GetArrayValue<Arr>
-  | Set_<
-      GetObjectForKey<Arr, number, Path[Depth[Index]]>,
-      Path,
-      Value,
-      Depth[Index]
-    >
-)[];
 
 type GetObjectForKey<
   Obj extends AnyObject,
