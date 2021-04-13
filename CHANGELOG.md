@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.2.0
+
+## Fixed:
+
+- `get` correctly works with unions and arrays ([#6](https://github.com/Ayub-Begimkulov/ts-get-set/issues/6))
+
 ## 1.1.1
 
 ## Fixed:
