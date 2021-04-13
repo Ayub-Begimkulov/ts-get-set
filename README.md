@@ -32,20 +32,28 @@ const a = {
   c: [1, 2, { d: "asdf" }],
 };
 
-let d: string = get(a, "c.2.d");
+let d = get(a, "c.2.d");
+
+// undefined added to the type because array
+// is not readonly so we can't find out
+// if this index exists, and for that reason we
+// add undefined to the return type
+type DType = typeof d; // string | undefined
 console.log(d); // "asdf"
 
-const updatedA = set(a, "c.2.d", "fdsa");
+const updatedA = set(a, "c.1", "hello");
+
+type UpdatedAType = typeof updatedA;
+// {
+//   b: number,
+//   c: (number | string | { d: string })[]
+// }
 
 console.log(updatedA);
 // {
 //   b: 5,
-//   c: [1, 2, { d: "fdsa" }],
-// };
-
-d = get(a, "c.2.d");
-console.log(d); // "fdsa"
-console.log(a.c[2].d); // "fdsa"
+//   c: [1, 'hello', { d: "asdf" }],
+// }
 ```
 
 ## Recommended configurations
@@ -64,12 +72,34 @@ When using this library it's recommended to turn on these options in your `tscon
 }
 ```
 
-<!-- ## Limitations
+## Limitations
 
-There are few limitations with this library that, unfortunately,couldn't be solved right now:
+- TypeScript version must be 4.2 or higher
+- `set` mutates object but there isn't a way to type it correctly right now, so you have to reassign it to another variable:
 
-1. Although `set` function mutates passed object, it's impossible to correctly type this (if you have any suggestions, feel free share). So for now you'd need to reassign your object to a new variable after calling `set`.
-2. -->
+```ts
+const obj = {
+  b: 5,
+  c: {
+    d: "e",
+  },
+};
+
+const reassignedObj = set(obj, "c.d", 6);
+
+type ObjDType = typeof obj.c.d; // string
+
+type ReassignedObjDType = typeof reassignedObj.c.d; // number
+
+// reassignedObject has a different type so TS will complain
+// about it, but it's the same object
+// @ts-expect-error
+console.log(reassignedObj === obj); // true
+```
+
+- `get` and `set` functions support maximum object depth of 16 (It's hardcoded number that prevents infinite type recursion. I don't think that there is any real world scenario where this won't be enough)
+
+> Note that all these limitations (except first one) could potentially be fixed in near future by using some trick that I'm not aware of right now or by future TS improvement. If you have some ideas about them, feel free to open issue or PR.
 
 ## API
 

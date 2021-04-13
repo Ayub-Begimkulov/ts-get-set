@@ -68,7 +68,9 @@ type DefaultObject<Key extends string> = IsNumericKey<Key> extends true
   ? []
   : {};
 
-type IsNumericKey<T extends string> = T extends `${number}` ? true : false;
+export type IsNumericKey<T extends string> = T extends `${number}`
+  ? true
+  : false;
 
 interface SetFunction {
   <Obj extends AnyObject, Key extends string, Value>(
