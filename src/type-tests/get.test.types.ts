@@ -54,9 +54,11 @@ assert<
 //   true
 // );
 
-const depthTestArray = get([[[[[[[[0]]]]]]]], "0.0.0.0.0.0.0"); // error if we add one more key
+// depth test for arrays, should not give recursion errors
+get([[[[[[[[0]]]]]]]], "0.0.0.0.0.0.0"); // error if we add one more key
 
-const depthTestObject = get(
+// depth test for objects, should not give recursion errors
+get(
   {
     a: {
       b: {

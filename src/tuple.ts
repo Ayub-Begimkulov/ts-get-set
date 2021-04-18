@@ -1,6 +1,6 @@
 import { AnyArray, Depth } from "./types";
 
-// TODO we do not need a type distribution (i.e. `extends unknown`)
+// TODO do we not need a type distribution (i.e. `extends unknown`)?
 export type IsTuple<T extends AnyArray> = T extends unknown
   ? number extends T["length"]
     ? false
