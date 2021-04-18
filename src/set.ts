@@ -99,6 +99,3 @@ export const set: SetFunction = (object, stringPath, value) => {
   }
   return object as any;
 };
-
-// // if we add one more, it will complain
-// const result = set([[[[[[[[[[[[0]]]]]]]]]]]], "0.0.0.0.0.0.0", 5);
