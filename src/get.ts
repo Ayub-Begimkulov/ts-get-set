@@ -1,37 +1,22 @@
-import { IsNumericKey } from "./set";
 import { PathString, stringToPath } from "./string-to-path";
-import { GetArrayValue, IsTuple } from "./tuple";
-import { AnyObject, Depth } from "./types";
+import { AnyArray, AnyObject, Depth, IsNumericKey } from "./types";
 import { hasOwn, isUndefined, isObject } from "./utils";
+import { GetArrayValue, IsTuple } from "./tuple";
 
 export type Get<
-  Obj extends AnyObject,
+  Value extends AnyObject,
   Path extends string[],
-  DefaultValue = undefined
-> = Get_<Obj, Path, DefaultValue> extends infer X ? X : never;
+  Default = undefined
+> = Get_<Value, Path, Default>;
 
-type Get_<Value, Path extends string[], Default, Index extends number = 0> = {
-  0: Value extends unknown
-    ? Value extends AnyObject // we need to check that value is object
-      ? Value extends readonly unknown[]
-        ? IsNumericKey<Path[Index]> extends true
-          ? IsTuple<Value> extends true
-            ? Get_<Value[Path[Index]], Path, Default, Depth[Index]>
-            : Get_<
-                GetArrayValue<Value> | undefined, // adding undefined to value (noUncheckedIndexAccess)
-                Path,
-                Default,
-                Depth[Index]
-              >
-          : GetKey<Value, Path, Default, Index>
-        : GetKey<Value, Path, Default, Index>
-      : Default
-    : never;
-  1: Value extends unknown
-    ? Value extends undefined
-      ? Default
-      : Value
-    : never;
+type Get_<
+  Value,
+  Path extends string[],
+  Default = undefined,
+  Index extends number = 0
+> = {
+  0: Value extends AnyObject ? GetKey<Value, Path, Default, Index> : Default;
+  1: Value extends undefined ? Default : Value;
 }[Index extends Path["length"] ? 1 : 0];
 
 type GetKey<
@@ -41,6 +26,14 @@ type GetKey<
   Index extends number
 > = Path[Index] extends keyof Value
   ? Get_<Value[Path[Index]], Path, Default, Depth[Index]>
+  : Value extends AnyArray
+  ? IsNumericKey<Path[Index]> extends true
+    ? // value isn't tuple, get array value and
+      // add `undefined` to it (similar to `noUncheckedIndexAccess`)
+      IsTuple<Value> extends false
+      ? Get_<GetArrayValue<Value> | undefined, Path, Default, Depth[Index]>
+      : Default
+    : Default
   : Default;
 
 interface GetFunction {

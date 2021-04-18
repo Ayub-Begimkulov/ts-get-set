@@ -1,6 +1,6 @@
 import { isObject } from "./utils";
 import { PathString, stringToPath } from "./string-to-path";
-import { AnyObject, Depth } from "./types";
+import { AnyArray, AnyObject, Depth, IsNumericKey } from "./types";
 import { SetTuple, GetArrayValue, IsTuple } from "./tuple";
 
 export type Set<
@@ -15,7 +15,7 @@ type Set_<
   Value,
   Index extends number = 0
 > = {
-  0: Obj extends readonly unknown[]
+  0: Obj extends AnyArray
     ? IsNumericKey<Path[Index]> extends true
       ? IsTuple<Obj> extends true
         ? SetTuple<
@@ -67,10 +67,6 @@ type GetObjectForKey<
 type DefaultObject<Key extends string> = IsNumericKey<Key> extends true
   ? []
   : {};
-
-export type IsNumericKey<T extends string> = T extends `${number}`
-  ? true
-  : false;
 
 interface SetFunction {
   <Obj extends AnyObject, Key extends string, Value>(
