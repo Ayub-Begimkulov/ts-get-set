@@ -55,6 +55,6 @@ type GetTupleRest_<
 // TODO dirty way (and most likely not effective from a performance perspective)
 // check if we can find other way
 type GetTupleKeys<Tuple extends readonly unknown[]> = Extract<
-  Exclude<keyof Tuple, number>,
+  keyof Tuple,
   `${number}`
 >;

@@ -14,6 +14,3 @@ type AppendPath<
 
 export const stringToPath = <T extends string>(path: T) =>
   path.split(".").filter(Boolean) as PathString<T>;
-
-// let a: ["1"] = stringToPath(".1");
-// let b: [] = stringToPath("");
