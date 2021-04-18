@@ -1,4 +1,4 @@
-import { Get } from "../get";
+import { get, Get } from "../get";
 import { assert, Equals } from ".";
 
 // simple
@@ -53,3 +53,26 @@ assert<
 // assert<Equals<Get<[1, "2", ...string[]], ["3"]>, string | /* 1 | */ undefined>>(
 //   true
 // );
+
+const depthTestArray = get([[[[[[[[0]]]]]]]], "0.0.0.0.0.0.0"); // error if we add one more key
+
+const depthTestObject = get(
+  {
+    a: {
+      b: {
+        c: {
+          d: {
+            e: {
+              f: {
+                g: {
+                  h: { i: { j: { k: { l: { m: { n: { o: 5 } } } } } } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "a.b.c.d.e.f.g.h.i.j.k.l.m.n" // error if we add 1 more
+);

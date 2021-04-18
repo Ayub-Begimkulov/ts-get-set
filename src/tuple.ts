@@ -1,29 +1,36 @@
-import { Depth } from "./types";
+import { AnyArray, Depth } from "./types";
 
-export type IsTuple<Tuple extends readonly unknown[]> = Tuple extends unknown
-  ? Tuple extends []
-    ? true
-    : Tuple extends ReadonlyArray<infer U>
-    ? U[] extends Tuple
-      ? false
-      : Tuple extends readonly [unknown, ...infer Rest] // edge case for types like `[1, 2, ...number[]]`
-      ? IsTuple<Rest>
-      : never
-    : never
+// TODO we do not need a type distribution (i.e. `extends unknown`)
+export type IsTuple<T extends AnyArray> = T extends unknown
+  ? number extends T["length"]
+    ? false
+    : true
   : never;
 
-export type GetArrayValue<
-  T extends readonly unknown[]
-> = T extends ReadonlyArray<infer U> ? U : never;
+// export type IsTuple<Tuple extends AnyArray> = Tuple extends unknown
+//   ? Tuple extends []
+//     ? true
+//     : Tuple extends ReadonlyArray<infer U>
+//     ? U[] extends Tuple
+//       ? false
+//       : Tuple extends readonly [unknown, ...infer Rest] // edge case for types like `[1, 2, ...number[]]`
+//       ? IsTuple<Rest>
+//       : never
+//     : never
+//   : never;
+
+export type GetArrayValue<T extends AnyArray> = T extends ReadonlyArray<infer U>
+  ? U
+  : never;
 
 export type SetTuple<
-  A extends readonly unknown[],
+  A extends AnyArray,
   Index extends string,
   Value
 > = SetTuple_<A, Index, Value>;
 
 type SetTuple_<
-  A extends readonly unknown[],
+  A extends AnyArray,
   Index extends string,
   Value,
   Result extends unknown[] = []
@@ -35,13 +42,13 @@ type SetTuple_<
 }[`${Result["length"]}` extends Index ? 1 : 0];
 
 export type GetTupleRest<
-  Tuple extends readonly unknown[],
+  Tuple extends AnyArray,
   Index extends number,
   Keys extends string = GetTupleKeys<Tuple>
 > = `${Index}` extends Keys ? GetTupleRest_<Tuple, Index, Keys> : [];
 
 type GetTupleRest_<
-  Tuple extends readonly unknown[],
+  Tuple extends AnyArray,
   Index extends number,
   Keys extends string,
   Result extends unknown[] = []
@@ -54,7 +61,4 @@ type GetTupleRest_<
 
 // TODO dirty way (and most likely not effective from a performance perspective)
 // check if we can find other way
-type GetTupleKeys<Tuple extends readonly unknown[]> = Extract<
-  keyof Tuple,
-  `${number}`
->;
+type GetTupleKeys<Tuple extends AnyArray> = Extract<keyof Tuple, `${number}`>;
