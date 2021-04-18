@@ -21,7 +21,16 @@ assert<Equals<Get<{ a: 5 }, ["b"], "asdf">, "asdf">>(true);
 // default value with undefined
 assert<Equals<Get<{ a: 5; b: undefined }, ["b"], "asdf">, "asdf">>(true);
 
+// default value with undefined in union
+assert<
+  Equals<Get<{ a: 5; b: number | undefined }, ["b"], "asdf">, number | "asdf">
+>(true);
+
 // should work with unions correctly
+assert<Equals<Get<{ a: number } | { a: string }, ["a"]>, string | number>>(
+  true
+);
+
 assert<
   Equals<Get<{ a: { "2": "hello" } | [1, 2, 3] }, ["a", "2"]>, 3 | "hello">
 >(true);
@@ -39,3 +48,8 @@ assert<
     number | { b: number } | undefined
   >
 >(true);
+
+// should work correctly with tuplish arrays
+// assert<Equals<Get<[1, "2", ...string[]], ["3"]>, string | /* 1 | */ undefined>>(
+//   true
+// );

@@ -51,8 +51,6 @@ interface GetFunction {
   ): Get<Obj, PathString<Key>, Default>;
 }
 
-// type Test = Get<{ a: [1, 2, { b: number }] }, ["a", "2", "b"]>;
-
 export const get: GetFunction = (object, stringPath, defaultValue) => {
   const path = stringToPath(stringPath);
   let index = -1;
