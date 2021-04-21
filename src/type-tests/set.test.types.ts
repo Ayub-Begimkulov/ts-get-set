@@ -66,6 +66,37 @@ assert<
   Equals<Set<{ a: number[] }, ["a", "2"], "asdf">, { a: (number | "asdf")[] }>
 >(true);
 
+// should work with unions correctly
+// union objects
+assert<
+  Equals<
+    Set<{ a: string } | { b: number }, ["a"], boolean>,
+    | {
+        a: boolean;
+      }
+    | {
+        a: boolean;
+        b: number;
+      }
+  >
+>(true);
+
+// union arrays
+assert<
+  Equals<
+    Set<["asdf", "fdsa"] | [1, 2, 3], ["2"], false>,
+    ["asdf", "fdsa", false] | [1, 2, false]
+  >
+>(true);
+
+// union with primitive
+assert<
+  Equals<
+    Set<{ a: ["asdf", "fdsa"] | boolean }, ["a", "2"], false>,
+    { a: ["asdf", "fdsa", false] | [undefined, undefined, false] }
+  >
+>(true);
+
 // TODO do we need to preserve readonly when using set?
 // assert<
 //   Equals<
