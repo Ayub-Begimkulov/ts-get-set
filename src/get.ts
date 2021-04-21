@@ -27,13 +27,13 @@ type GetKey<
 > = Path[Index] extends keyof Value
   ? Get_<Value[Path[Index]], Path, Default, Depth[Index]>
   : Value extends AnyArray
-  ? IsNumericKey<Path[Index]> extends true
-    ? // value isn't tuple, get array value and
+  ? IsNumericKey<Path[Index]> extends false
+    ? Default
+    : IsTuple<Value> extends true
+    ? Default
+    : // value isn't tuple, get array value and
       // add `undefined` to it (similar to `noUncheckedIndexAccess`)
-      IsTuple<Value> extends false
-      ? Get_<GetArrayValue<Value> | undefined, Path, Default, Depth[Index]>
-      : Default
-    : Default
+      Get_<GetArrayValue<Value> | undefined, Path, Default, Depth[Index]>
   : Default;
 
 interface GetFunction {
