@@ -55,7 +55,7 @@ assert<
 // );
 
 // depth test for arrays, should not give recursion errors
-get([[[[[[[[0]]]]]]]], "0.0.0.0.0.0.0"); // error if we add one more key
+get([[[[[[[[[0]]]]]]]]], "0.0.0.0.0.0.0.0"); // error if we add one more key
 
 // depth test for objects, should not give recursion errors
 get(
