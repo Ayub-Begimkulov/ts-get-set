@@ -22,7 +22,7 @@ type Set_<
             Obj,
             Path[Index],
             Set_<
-              GetObjectForKey<Obj, number, Path[Depth[Index]]>,
+              GetNextObject<GetArrayValue<Obj>, Path[Depth[Index]]>,
               Path,
               Value,
               Depth[Index]
@@ -31,7 +31,7 @@ type Set_<
         : (
             | GetArrayValue<Obj>
             | Set_<
-                GetObjectForKey<Obj, number, Path[Depth[Index]]>,
+                GetNextObject<GetArrayValue<Obj>, Path[Depth[Index]]>,
                 Path,
                 Value,
                 Depth[Index]
@@ -44,7 +44,7 @@ type Set_<
         // ts preserves type aliases in unions since 4.2
         [K in keyof Obj | Path[Index]]: K extends Path[Index]
           ? Set_<
-              GetObjectForKey<Obj, Path[Index], Path[Depth[Index]]>,
+              GetNextObject<Obj[Path[Index]], Path[Depth[Index]]>,
               Path,
               Value,
               Depth[Index]
@@ -54,14 +54,10 @@ type Set_<
   1: Value;
 }[Index extends Path["length"] ? 1 : 0];
 
-type GetObjectForKey<
-  Obj extends AnyObject,
-  Key extends string | number,
-  NextKey extends string
-> = Obj[Key] extends never
+type GetNextObject<Value, NextKey extends string> = [Value] extends [never]
   ? DefaultObject<NextKey>
-  : Obj[Key] extends AnyObject
-  ? Obj[Key]
+  : Value extends AnyObject
+  ? Value
   : DefaultObject<NextKey>;
 
 type DefaultObject<Key extends string> = IsNumericKey<Key> extends true
