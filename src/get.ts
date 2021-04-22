@@ -1,13 +1,16 @@
-import { PathString, stringToPath } from "./string-to-path";
-import { AnyArray, AnyObject, Depth, IsNumericKey } from "./types";
+import { StringToPath, stringToPath } from "./string-to-path";
+import { AnyArray, AnyObject, Sequence, IsNumericKey } from "./types";
 import { hasOwn, isUndefined, isObject } from "./utils";
 import { GetArrayValue, IsTuple } from "./tuple";
 
+// `StringPath` doesn't get distributed inside `Set_`, do it manually here
 export type Get<
   Value extends AnyObject,
-  Path extends string[],
+  StringPath extends string,
   Default = undefined
-> = Get_<Value, Path, Default>;
+> = StringPath extends unknown
+  ? Get_<Value, StringToPath<StringPath>, Default>
+  : never;
 
 type Get_<
   Value,
@@ -25,7 +28,7 @@ type GetKey<
   Default,
   Index extends number
 > = Path[Index] extends keyof Value
-  ? Get_<Value[Path[Index]], Path, Default, Depth[Index]>
+  ? Get_<Value[Path[Index]], Path, Default, Sequence[Index]>
   : Value extends AnyArray
   ? IsNumericKey<Path[Index]> extends false
     ? Default
@@ -33,15 +36,15 @@ type GetKey<
     ? Default
     : // value isn't tuple, get array value and
       // add `undefined` to it (similar to `noUncheckedIndexAccess`)
-      Get_<GetArrayValue<Value> | undefined, Path, Default, Depth[Index]>
+      Get_<GetArrayValue<Value> | undefined, Path, Default, Sequence[Index]>
   : Default;
 
 interface GetFunction {
-  <Obj extends AnyObject, Key extends string, Default = undefined>(
+  <Obj extends AnyObject, Path extends string, Default = undefined>(
     object: Obj,
-    stringPath: Key,
+    path: Path,
     defaultValue?: Default
-  ): Get<Obj, PathString<Key>, Default>;
+  ): Get<Obj, Path, Default>;
 }
 
 export const get: GetFunction = (object, stringPath, defaultValue) => {
