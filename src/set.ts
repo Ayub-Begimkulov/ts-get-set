@@ -1,13 +1,16 @@
 import { isObject } from "./utils";
-import { PathString, stringToPath } from "./string-to-path";
-import { AnyArray, AnyObject, Depth, IsNumericKey } from "./types";
+import { StringToPath, stringToPath } from "./string-to-path";
+import { AnyArray, AnyObject, Sequence, IsNumericKey } from "./types";
 import { SetTuple, GetArrayValue, IsTuple } from "./tuple";
 
+// `StringPath` doesn't get distributed inside `Set_`, do it manually here
 export type Set<
   Obj extends AnyObject,
-  Path extends string[],
+  StringPath extends string,
   Value
-> = Path["length"] extends 0 ? Obj : Set_<Obj, Path, Value>;
+> = StringPath extends unknown
+  ? Set_<Obj, StringToPath<StringPath>, Value>
+  : never;
 
 type Set_<
   Obj extends AnyObject,
@@ -22,19 +25,19 @@ type Set_<
             Obj,
             Path[Index],
             Set_<
-              GetNextObject<GetArrayValue<Obj>, Path[Depth[Index]]>,
+              GetNextObject<GetArrayValue<Obj>, Path[Sequence[Index]]>,
               Path,
               Value,
-              Depth[Index]
+              Sequence[Index]
             >
           >
         : (
             | GetArrayValue<Obj>
             | Set_<
-                GetNextObject<GetArrayValue<Obj>, Path[Depth[Index]]>,
+                GetNextObject<GetArrayValue<Obj>, Path[Sequence[Index]]>,
                 Path,
                 Value,
-                Depth[Index]
+                Sequence[Index]
               >
           )[]
       : // if object is an array but the key isn't numeric create and intersection type with object
@@ -44,14 +47,14 @@ type Set_<
         // ts preserves type aliases in unions since 4.2
         [K in keyof Obj | Path[Index]]: K extends Path[Index]
           ? Set_<
-              GetNextObject<Obj[Path[Index]], Path[Depth[Index]]>,
+              GetNextObject<Obj[Path[Index]], Path[Sequence[Index]]>,
               Path,
               Value,
-              Depth[Index]
+              Sequence[Index]
             >
           : Obj[K];
       };
-  1: Value;
+  1: Path["length"] extends 0 ? Obj : Value;
 }[Index extends Path["length"] ? 1 : 0];
 
 type GetNextObject<Value, NextKey extends string> = [Value] extends [never]
@@ -65,11 +68,11 @@ type DefaultObject<Key extends string> = IsNumericKey<Key> extends true
   : {};
 
 interface SetFunction {
-  <Obj extends AnyObject, Key extends string, Value>(
+  <Obj extends AnyObject, Path extends string, Value>(
     object: Obj,
-    stringPath: Key,
+    path: Path,
     value: Value
-  ): Set<Obj, PathString<Key>, Value>;
+  ): Set<Obj, Path, Value>;
 }
 
 export const set: SetFunction = (object, stringPath, value) => {

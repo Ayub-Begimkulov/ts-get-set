@@ -1,23 +1,11 @@
-import { AnyArray, Depth } from "./types";
+import { AnyArray, Sequence } from "./types";
 
-// TODO do we not need a type distribution (i.e. `extends unknown`)?
-export type IsTuple<T extends AnyArray> = T extends unknown
-  ? number extends T["length"]
-    ? false
-    : true
-  : never;
-
-// export type IsTuple<Tuple extends AnyArray> = Tuple extends unknown
-//   ? Tuple extends []
-//     ? true
-//     : Tuple extends ReadonlyArray<infer U>
-//     ? U[] extends Tuple
-//       ? false
-//       : Tuple extends readonly [unknown, ...infer Rest] // edge case for types like `[1, 2, ...number[]]`
-//       ? IsTuple<Rest>
-//       : never
-//     : never
-//   : never;
+// Tuple arrays have literal indexes (e.g. 5)
+// we could use it to detect whether
+// array is tuple or not
+export type IsTuple<T extends AnyArray> = number extends T["length"]
+  ? false
+  : true;
 
 export type GetArrayValue<T extends AnyArray> = T extends ReadonlyArray<infer U>
   ? U
@@ -33,12 +21,12 @@ type SetTuple_<
   A extends AnyArray,
   Index extends string,
   Value,
-  Result extends unknown[] = []
+  Result extends AnyArray = []
 > = {
   0: A["length"] extends Result["length"]
     ? SetTuple_<A, Index, Value, [...Result, undefined]>
     : SetTuple_<A, Index, Value, [...Result, A[Result["length"]]]>;
-  1: [...Result, Value, ...GetTupleRest<A, Depth[Result["length"]]>]; // TODO add rest of `A`
+  1: [...Result, Value, ...GetTupleRest<A, Sequence[Result["length"]]>]; // TODO add rest of `A`
 }[`${Result["length"]}` extends Index ? 1 : 0];
 
 export type GetTupleRest<
@@ -51,13 +39,13 @@ type GetTupleRest_<
   Tuple extends AnyArray,
   Index extends number,
   Keys extends string,
-  Result extends unknown[] = []
+  Result extends AnyArray = []
 > =
   // if we are here, it means that on first run `Tuple["length"]` is higher than `Index`
   // otherwise the check wouldn't pass in `GetTupleRest`
   Tuple["length"] extends Index
     ? Result
-    : GetTupleRest_<Tuple, Depth[Index], Keys, [...Result, Tuple[Index]]>;
+    : GetTupleRest_<Tuple, Sequence[Index], Keys, [...Result, Tuple[Index]]>;
 
 // TODO dirty way (and most likely not effective from a performance perspective)
 // check if we can find other way

@@ -34,10 +34,6 @@ const a = {
 
 let d = get(a, "c.2.d");
 
-// undefined added to the type because array
-// is not readonly so we can't find out
-// if this index exists, and for that reason we
-// add undefined to the return type
 type DType = typeof d; // string | undefined
 console.log(d); // "asdf"
 
@@ -55,6 +51,8 @@ console.log(updatedA);
 //   c: [1, 'hello', { d: "asdf" }],
 // }
 ```
+
+> Note that `undefined` was added to the `DType` because array (`a.c`) is not tuple, so we can't know for sure that this index exists, and for that reason we add `undefined` to the return type. This behavior is similar to `noUncheckIndexAccess` option in `tsconfig`.
 
 ## Recommended configurations
 
@@ -101,6 +99,25 @@ console.log(reassignedObj === obj); // true
 
 > Note that all these limitations (except first one) could potentially be fixed in near future by using some trick that I'm not aware of right now or by future TS improvement. If you have some ideas about them, feel free to open issue or PR.
 
+## Migrating from version 1
+
+The external API for `get` and `set` functions hasn't changed. Therefor, you shouldn't face any issues if you haven't used exported utility types (`Get`, `Set`, etc.).
+
+But if you have used them, check the list of changes:
+
+- `PathString` was renamed to `StringToPath`.
+- `Get` and `Set` accept `path` as string instead of array:
+
+```ts
+// version 1
+Get<obj, ['some', 'path']>
+// or
+Get<obj, PathString<'some.path'>>
+
+// now
+Get<obj, 'some.path'>
+```
+
 ## API
 
 ### `get`
@@ -110,18 +127,18 @@ Gets the value at `path` of `object`. If the resolved value is `undefined`, the 
 Usage:
 
 ```ts
-const obj = { a: [1, 2, { b: 3 }] };
-get(obj, "a.2.b"); // 3
+const object = { a: [1, 2, { b: 3 }] };
+get(object, "a.2.b"); // 3
 ```
 
 Type:
 
 ```ts
-function get<Obj extends AnyObject, Key extends string, Default = undefined>(
+function get<Obj extends AnyObject, Path extends string, Default = undefined>(
   object: Obj,
-  stringPath: Key,
+  stringPath: Path,
   defaultValue?: Default
-): Get<Obj, PathString<Key>, Default>;
+): Get<Obj, Path, Default>;
 ```
 
 ### `set`
@@ -136,11 +153,11 @@ set(obj, "a.2.b", "hello"); // { a: [undefined, undefined, { b: "hello" }] }
 Type:
 
 ```ts
-function set<Obj extends AnyObject, Key extends string, Value>(
+function set<Obj extends AnyObject, Path extends string, Value>(
   object: Obj,
-  stringPath: Key,
+  path: Path,
   value: Value
-): Set<Obj, PathString<Key>, Value>;
+): Set<Obj, Path, Value>;
 ```
 
 ### `stringToPath`
@@ -155,14 +172,14 @@ const path = stringToPath("a.b.2.c.5");
 console.log(path); // ["a", "b", "2", "c", "5"]
 ```
 
-### `PathString`
+### `StringToPath`
 
 A type that converts string to a path.
 
 Usage:
 
 ```ts
-type Path = PathString<"a.b.c.1">; // ["a", "b", "c", "1"]
+type Path = StringToPath<"a.b.c.1">; // ["a", "b", "c", "1"]
 ```
 
 ### `Get`
@@ -172,9 +189,7 @@ A type that gets a property from object at specified path.
 Usage:
 
 ```ts
-type NestedProps = Get<{ a: { b: [1, "c"] } }, ["a", "b", "2"]>; // "c";
-// or
-type NestedProps = Get<{ a: { b: [1, "c"] } }, PathString<"a.b.2">>; // "c";
+type NestedProps = Get<{ a: { b: [1, "c"] } }, "a.b.2">; // "c";
 ```
 
 ### `Set`
@@ -183,9 +198,8 @@ A type that sets the property to a provided value at path.
 
 ```ts
 type Data = { b: number; c: string };
-type NewData = Set<Data, ["c", "d"], string[]>; // { c: { d: string[]; } b: number; }
-// or
-type NewData = Set<Data, PathString<"c.d">, string[]>; // { c: { d: string[]; } b: number; }
+
+type NewData = Set<Data, "c.d", string[]>; // { c: { d: string[]; } b: number; }
 ```
 
 ## Roadmap
