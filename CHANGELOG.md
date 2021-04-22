@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.3.0
+
+- Get Performance and Recursion Depth Improvements ([#9](https://github.com/Ayub-Begimkulov/ts-get-set/pull/9))
+- Restructured a GetKey type to increase recursion depth for arrays ([#11](https://github.com/Ayub-Begimkulov/ts-get-set/pull/11))
+- Set correctly handles unions ([#12](https://github.com/Ayub-Begimkulov/ts-get-set/pull/12))
+
 ## 1.2.0
 
 ## Fixed:
