@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.1.0
+
+## Fixed:
+
+- Set type correctly handles tuples, recursion depth improvement ([#14](https://github.com/Ayub-Begimkulov/ts-get-set/pull/14))
+
 ## 2.0.0
 
 ## Added
