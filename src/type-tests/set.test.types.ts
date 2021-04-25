@@ -117,7 +117,7 @@ assert<
 >(true);
 
 // depth test array
-set([[[[[[[[0]]]]]]]], "0.0.0.0.0.0.0", 5);
+set([[[[[[[[0]]]]]]]], "0.0.0.0.0.0.0.0", 5);
 
 // depth test object
 set(

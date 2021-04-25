@@ -19,29 +19,29 @@ type Set_<
   Index extends number = 0
 > = {
   0: Obj extends AnyArray
-    ? IsNumericKey<Path[Index]> extends true
-      ? IsTuple<Obj> extends true
-        ? SetTuple<
-            Obj,
-            Path[Index],
-            Set_<
+    ? IsNumericKey<Path[Index]> extends false
+      ? // if object is an array but the key isn't numeric create and intersection type with object
+        Obj & Set_<{}, Path, Value, Index>
+      : IsTuple<Obj> extends false
+      ? (
+          | GetArrayValue<Obj>
+          | Set_<
               GetNextObject<GetArrayValue<Obj>, Path[Sequence[Index]]>,
               Path,
               Value,
               Sequence[Index]
             >
+        )[]
+      : SetTuple<
+          Obj,
+          Path[Index],
+          Set_<
+            GetNextObject<Obj[Path[Index]], Path[Sequence[Index]]>,
+            Path,
+            Value,
+            Sequence[Index]
           >
-        : (
-            | GetArrayValue<Obj>
-            | Set_<
-                GetNextObject<GetArrayValue<Obj>, Path[Sequence[Index]]>,
-                Path,
-                Value,
-                Sequence[Index]
-              >
-          )[]
-      : // if object is an array but the key isn't numeric create and intersection type with object
-        Obj & Set_<{}, Path, Value, Index>
+        >
     : {
         // writing this type inline because
         // ts preserves type aliases in unions since 4.2
