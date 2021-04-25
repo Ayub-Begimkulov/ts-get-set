@@ -12,6 +12,8 @@
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/ts-get-set?style=flat-square)](https://bundlephobia.com/result?p=ts-get-set)
 [![GitHub](https://img.shields.io/github/license/Ayub-Begimkulov/ts-get-set?style=flat-square)](https://github.com/Ayub-Begimkulov/tiny-use-debounce/blob/master/LICENSE)
 
+[playground-link]: https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAbzgcwKYwDRwM7rgXzgDMoIQ4ByGbAWjRhtxgoG4AoNgYwgDtt4AhnAC8iNnDgAjAFxwArBnFxOsgNoBGLACYsSACayARAOx6ihggF1F+dmwA2ePSJToAFAKyHOAOi0+9QwBKOxgATzBUOAARABUIqNFwyIgiOD12bj4IRx97CGQ3PRC4AHpSuGNTcw4s-jgAVzA9ARhUPQBBFyYPL191Qy8AC1R7fODQhLgAVWbW9o74yJdk1FTGubbOuy5ebBzUPIK3JpatjpCgA
+
 ## Installation
 
 ```shell
@@ -23,6 +25,8 @@ yarn add ts-get-set
 ```
 
 ## Usage
+
+[Try in Playground][playground-link]
 
 ```ts
 import { get, set } from "ts-get-set";
@@ -52,7 +56,7 @@ console.log(updatedA);
 // }
 ```
 
-> Note that `undefined` was added to the `DType` because array (`a.c`) is not tuple, so we can't know for sure that this index exists, and for that reason we add `undefined` to the return type. This behavior is similar to `noUncheckIndexAccess` option in `tsconfig`.
+Note that `undefined` was added to the `DType` because array (`a.c`) is not tuple, so we can't know for sure that this index exists, and for that reason we add `undefined` to the return type. This behavior is similar to `noUncheckIndexAccess` option in `tsconfig`.
 
 ## Recommended configurations
 
@@ -211,6 +215,10 @@ Here is the list of features that I want to add in the near future. It's not the
 - [x] get, set and stringToPath 100% type safety (open an issue if you've found some bug).
 - [ ] Support for `[]` syntax for index access.
 - [ ] Suggestions in dot notation string (may increase compilation time).
+
+## Further readings
+
+- [TypeScript: type-safe get and set functions - part 1](https://www.ayubbegimkulov.com/ts-get-set/)
 
 ## License
 
