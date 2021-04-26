@@ -13,6 +13,8 @@
 [![GitHub](https://img.shields.io/github/license/Ayub-Begimkulov/ts-get-set?style=flat-square)](https://github.com/Ayub-Begimkulov/tiny-use-debounce/blob/master/LICENSE)
 
 [playground-link]: https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAbzgcwKYwDRwM7rgXzgDMoIQ4ByGbAWjRhtxgoG4AoNgYwgDtt4AhnAC8iNnDgAjAFxwArBnFxOsgNoBGLACYsSACayARAOx6ihggF1F+dmwA2ePSJToAFAKyHOAOi0+9QwBKOxgATzBUOAARABUIqNFwyIgiOD12bj4IRx97CGQ3PRC4AHpSuGNTcw4s-jgAVzA9ARhUPQBBFyYPL191Qy8AC1R7fODQhLgAVWbW9o74yJdk1FTGubbOuy5ebBzUPIK3JpatjpCgA
+[issues]: https://github.com/Ayub-Begimkulov/ts-get-set/issues
+[pulls]: https://github.com/Ayub-Begimkulov/ts-get-set/pulls
 
 ## Installation
 
@@ -76,7 +78,7 @@ When using this library it's recommended to turn on these options in your `tscon
 
 ## Limitations
 
-- TypeScript version must be 4.2 or higher
+- TypeScript version must be 4.1 or higher
 - `set` mutates object but there isn't a way to type it correctly right now, so you have to reassign it to another variable:
 
 ```ts
@@ -94,14 +96,14 @@ type ObjDType = typeof obj.c.d; // string
 type ReassignedObjDType = typeof reassignedObj.c.d; // number
 
 // reassignedObject has a different type so TS will complain
-// about it, but it's the same object
+// about it, but they store reference to the same object
 // @ts-expect-error
 console.log(reassignedObj === obj); // true
 ```
 
-- `get` and `set` functions support maximum object depth of 16 (It's hardcoded number that prevents infinite type recursion. I don't think that there is any real world scenario where this won't be enough)
+- `get` and `set` functions use recursive types under the hood, but TS has a builtin limit for recursion, so depending on the structure of your data type you'll be able to use path with up to 8-16 elements (the lowest value is for nested arrays, the highest for objects).
 
-> Note that all these limitations (except first one) could potentially be fixed in near future by using some trick that I'm not aware of right now or by future TS improvement. If you have some ideas about them, feel free to open issue or PR.
+> Note that all these limitations (except first one) could potentially be fixed in near future by using some trick that I'm not aware of right now or by future TS improvement. If you have some ideas about them, feel free to [open issue][issues] or [PR][pulls].
 
 ## Migrating from version 1
 
