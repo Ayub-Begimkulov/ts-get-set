@@ -120,39 +120,12 @@ assert<
 set([[[[[[[[0]]]]]]]], "0.0.0.0.0.0.0.0", 5);
 
 // depth test object
-set(
-  {
-    a: {
-      b: {
-        c: {
-          d: {
-            e: {
-              f: {
-                g: {
-                  h: {
-                    i: {
-                      j: {
-                        k: {
-                          l: {
-                            m: {
-                              n: { o: { p: 5 } },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-  "a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p",
-  5
-);
+let result = set({}, "a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w", 5);
+
+assert<
+  Equals<typeof result.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.u.v.w, number>
+>(true);
+
 // TODO do we need to preserve readonly when using set?
 // assert<
 //   Equals<

@@ -21,13 +21,12 @@ type SetTuple_<
   A extends AnyArray,
   Index extends string,
   Value,
-  Result extends AnyArray = []
+  Result extends AnyArray = [],
+  CurrentIndex extends number = Result["length"]
 > = {
-  0: A["length"] extends Result["length"]
-    ? SetTuple_<A, Index, Value, [...Result, undefined]>
-    : SetTuple_<A, Index, Value, [...Result, A[Result["length"]]]>;
-  1: [...Result, Value, ...GetTupleRest<A, Sequence[Result["length"]]>]; // TODO add rest of `A`
-}[`${Result["length"]}` extends Index ? 1 : 0];
+  0: SetTuple_<A, Index, Value, [...Result, A[CurrentIndex]]>;
+  1: [...Result, Value, ...GetTupleRest<A, Sequence[CurrentIndex]>];
+}[`${CurrentIndex}` extends Index ? 1 : 0];
 
 export type GetTupleRest<
   Tuple extends AnyArray,
@@ -40,13 +39,8 @@ type GetTupleRest_<
   Index extends number,
   Keys extends string,
   Result extends AnyArray = []
-> =
-  // if we are here, it means that on first run `Tuple["length"]` is higher than `Index`
-  // otherwise the check wouldn't pass in `GetTupleRest`
-  Tuple["length"] extends Index
-    ? Result
-    : GetTupleRest_<Tuple, Sequence[Index], Keys, [...Result, Tuple[Index]]>;
+> = Tuple["length"] extends Index
+  ? Result
+  : GetTupleRest_<Tuple, Sequence[Index], Keys, [...Result, Tuple[Index]]>;
 
-// TODO dirty way (and most likely not effective from a performance perspective)
-// check if we can find other way
 type GetTupleKeys<Tuple extends AnyArray> = Extract<keyof Tuple, `${number}`>;
