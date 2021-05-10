@@ -18,14 +18,14 @@ export type SetTuple<
 > = SetTuple_<A, Index, Value>;
 
 type SetTuple_<
-  A extends AnyArray,
+  Arr extends AnyArray,
   Index extends string,
   Value,
   Result extends AnyArray = [],
   CurrentIndex extends number = Result["length"]
 > = {
-  0: SetTuple_<A, Index, Value, [...Result, A[CurrentIndex]]>;
-  1: [...Result, Value, ...GetTupleRest<A, Sequence[CurrentIndex]>];
+  0: SetTuple_<Arr, Index, Value, [...Result, Arr[CurrentIndex]]>;
+  1: [...Result, Value, ...GetTupleRest<Arr, Sequence[CurrentIndex]>];
 }[`${CurrentIndex}` extends Index ? 1 : 0];
 
 export type GetTupleRest<

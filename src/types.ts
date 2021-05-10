@@ -2,7 +2,9 @@ export interface AnyObject {
   [key: string]: any;
 }
 
-export interface AnyArray extends ReadonlyArray<unknown> {}
+// extends AnyObject so we could use any string
+// to access array properties
+export interface AnyArray extends ReadonlyArray<unknown>, AnyObject {}
 
 export type Sequence = [
   1,
